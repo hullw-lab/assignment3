@@ -1,0 +1,223 @@
+# Assignment 3: Natural Language Processing
+
+## 1. Project Overview
+
+This project implements deep learning models for two NLP tasks:
+
+- **Task 1 — Text Generation**: Word-level language models trained on WikiText-2 that predict the next token given a sequence of words. Implemented using LSTM and GRU architectures with four embedding variants (learned, GloVe-100, one-hot).
+- **Task 2 — Machine Translation**: English → German neural machine translation trained on Multi30K using encoder–decoder seq2seq models with Bahdanau attention, implemented with both LSTM and GRU.
+
+---
+
+## 2. Dataset Description
+
+### Task 1 — WikiText-2
+- ~2 million train tokens drawn from verified Wikipedia articles
+- Vocabulary: 29,473 tokens (after filtering tokens with frequency < 3)
+- Three splits: 36,718 train rows / 3,760 validation rows / 4,358 test rows
+- Sourced from HuggingFace (`wikitext-2-raw-v1`) and loaded from parquet files
+
+### Task 2 — Multi30K (EN→DE)
+- 29,000 training sentence pairs, 1,014 validation, 1,000 test
+- Source: English image captions; Target: German translations
+- Tokenized using `basic_english` tokenizer
+- Source (EN) vocab size: 5,921 tokens | Target (DE) vocab size: 7,820 tokens (min_freq=2)
+- Sourced from HuggingFace (`bentrevett/multi30k`) and loaded from parquet files
+
+---
+
+## 3. Model Architectures Used
+
+### Task 1 — Language Models
+
+All models are word-level, trained with backpropagation through time (BPTT) over windows of 35 tokens.
+
+**LSTM Language Model**
+```
+Embedding → Dropout(0.5) → LSTM(2 layers, 512 hidden) → Dropout(0.5) → Linear → LogSoftmax
+```
+
+**GRU Language Model**
+```
+Embedding → Dropout(0.5) → GRU(2 layers, 512 hidden) → Dropout(0.5) → Linear → LogSoftmax
+```
+
+### Task 2 — Seq2Seq with Attention
+
+Both models follow the encoder–decoder paradigm with **Bahdanau (additive) attention**:
+
+```
+Encoder: Embedding → Dropout → RNN → (encoder_outputs, hidden)
+Attention: score(h_dec, h_enc) = v · tanh(W1·h_dec + W2·h_enc)
+Decoder: Embedding + Context → Dropout → RNN → Linear → logits
+```
+
+- **LSTM Seq2Seq**: encoder and decoder use LSTM cells (hidden + cell state)
+- **GRU Seq2Seq**: encoder and decoder use GRU cells (single hidden state)
+- Teacher forcing ratio decays linearly from 0.5 → 0.3 over training
+
+---
+
+## 4. Word Embedding Methods
+
+| Method | Dimension | Trainable | Used In |
+|---|---|---|---|
+| Learned (random init) | 256 | ✓ | Task 1 LSTM & GRU baseline |
+| GloVe-100 (frozen) | 100 | ✗ | Task 1 LSTM + GloVe |
+| One-hot encoding | vocab_size | ✗ | Task 1 GRU (ablation baseline) |
+| Learned (seq2seq) | 256 | ✓ | Task 2 LSTM & GRU |
+
+**GloVe** vectors are loaded from the Stanford NLP group's 6B token corpus via `torchtext`. Tokens not found in GloVe are initialised to zero vectors. Coverage on WikiText-2 was 96.4% (28,422 / 29,473 tokens).
+
+**One-hot** encoding is implemented as a frozen identity-matrix `nn.Embedding`. Each token is represented as a sparse `vocab_size`-dimensional vector with no semantic content, serving as a non-semantic baseline — the model cannot leverage any similarity between words.
+
+---
+
+## 5. Experimental Results
+
+### Task 1 — Test Perplexity (lower is better)
+
+| Model | Embedding | Test Perplexity |
+|---|---|---|
+| LSTM | Learned (256d) | 120.93 |
+| LSTM | GloVe-100 (frozen) | 231.36 |
+| GRU  | Learned (256d) | 130.05 |
+| GRU  | One-hot (baseline) | 212.51 |
+
+### Task 2 — Corpus BLEU on Test Set (higher is better)
+
+| Model | BLEU Score |
+|---|---|
+| LSTM Seq2Seq | 25.78 |
+| GRU Seq2Seq  | 25.88 |
+
+### Sample Generated Text (Task 1, LSTM + Learned, prompt: "the president of the united states")
+
+> the president of the united states that it was serving to be found to be the case of the two @-@ piece . the effect was made for 5 @ . @ 9 % of the game , and a year in which the game housed a series of the household ' s
+
+### Sample Translations (Task 2)
+
+| Source (EN) | Reference (DE) | LSTM Hypothesis | GRU Hypothesis |
+|---|---|---|---|
+| a man in an orange hat starring at something . | ein mann mit einem orangefarbenen hut , der etwas . | ein mann mit orangefarbenem hut betrachtet etwas etwas . | ein mann mit orangefarbener mütze meißelt etwas etwas . |
+| people are fixing the roof of a house . | leute reparieren das dach eines hauses . | menschen personen die das eines eines hauses . | leute starren den dach eines hauses . |
+| five people wearing winter jackets and helmets stand in the snow , with in the background . | fünf leute in winterjacken und mit helmen stehen im schnee mit im hintergrund . | fünf personen in rettungswesten und helmen stehen im schnee und im hintergrund im im hintergrund . | fünf personen mit jacken und helmen stehen im schnee im hintergrund . |
+
+---
+
+## 6. Comparison of Models
+
+### LSTM vs. GRU — Task 1 (Text Generation)
+
+LSTM slightly outperformed GRU with learned embeddings (120.93 vs 130.05 perplexity). LSTMs carry two state vectors (hidden + cell), giving them more capacity to model long-range dependencies across the 35-token BPTT window. GRUs merge these into a single hidden state, making them faster to train but slightly less expressive on longer-range Wikipedia text.
+
+### LSTM vs. GRU — Task 2 (Translation)
+
+On Multi30K, GRU and LSTM were essentially tied (25.88 vs 25.78 BLEU). Multi30K sentences are short (average ~12 tokens), so the extra memory capacity of LSTM provides no advantage — GRU's simpler gating is sufficient for this sequence length.
+
+### Embedding Comparison
+
+Learned embeddings significantly outperformed both GloVe (frozen) and one-hot encoding in Task 1. This is counterintuitive but explained by the fact that GloVe is **frozen** — the model cannot adapt the embedding space to WikiText-2's domain. One-hot encoding provides no semantic prior whatsoever, forcing the recurrent layers to learn all word relationships from scratch through a very high-dimensional sparse input, which is substantially harder. GloVe coverage was high at 96.4%, but the frozen constraint was the dominant limiting factor.
+
+---
+
+## 7. Challenges Faced During Implementation
+
+- **torchtext version incompatibility**: The installed torchtext (0.6.0) predates the modern dataset API (`WikiText2(split=...)`) and `build_vocab_from_iterator` keyword arguments like `min_freq`. Both the dataset loading and vocabulary building had to be rewritten from scratch using `urllib`, `pandas`, and a custom `Vocab` class built on `collections.Counter`.
+- **Dataset download failures**: The WikiText-2 raw token files moved URLs between PyTorch releases. Ultimately the data was sourced from HuggingFace as parquet files and read via `pandas.read_parquet()`, bypassing torchtext's dataset API entirely.
+- **CUDA installation**: The initial PyTorch install was CPU-only despite a CUDA-capable GPU being present. Reinstalling with `--index-url https://download.pytorch.org/whl/cu130` was required to enable GPU training.
+- **One-hot memory**: The identity matrix for a 29,473-token vocabulary is very large in float32. This required reducing the hidden dimension to 128 and using a single-layer GRU to keep memory manageable.
+- **Teacher forcing decay**: Using a fixed teacher forcing ratio of 0.5 throughout training led to poor inference-time performance. Gradually reducing it from 0.5 to 0.3 over training epochs improved BLEU scores.
+- **API deprecations**: `ReduceLROnPlateau`'s `verbose=True` argument was removed in newer PyTorch versions and had to be dropped.
+- **`global` declaration syntax**: Python 3.13 enforces that `global` declarations must appear before any use of the variable within a function scope, which required reordering code in `train.py`.
+
+---
+
+## 8. Limitations of the Considered Models
+
+- **No Transformer**: Attention-based RNNs are outperformed by Transformer architectures on virtually all NLP benchmarks. LSTM/GRU seq2seq is now considered a historical baseline.
+- **Frozen GloVe embeddings**: GloVe was kept frozen during training. Allowing fine-tuning after a warm-up period would likely close the gap with learned embeddings.
+- **Word-level tokenization**: Word-level models produce `<unk>` tokens for any word outside the vocabulary. German is morphologically rich — compound words like "orangefarbenen" are common and often OOV. Subword tokenization (BPE or WordPiece) would handle these gracefully.
+- **Greedy decoding**: The evaluator uses greedy decoding (argmax at each step). Beam search (width 4–5) typically adds +1–3 BLEU points.
+- **Small translation dataset**: Multi30K has only 29,000 sentence pairs — far too small for production MT. State-of-the-art models train on hundreds of millions of pairs.
+- **Unidirectional encoder**: All encoders are unidirectional. Bidirectional encoders see both past and future context, generally improving translation quality.
+- **One-hot scalability**: One-hot encoding does not scale to large vocabularies and required a reduced-capacity model to run, making direct comparison with learned embeddings unfair.
+
+---
+
+## 9. Possible Future Improvements
+
+- **Switch to Transformer**: Replace the RNN encoder–decoder with a Transformer (multi-head self-attention). This is the de facto standard for NLP tasks since 2017.
+- **Beam search decoding**: Replace greedy decode with beam search (beam width 4–5) for better translation quality at inference time.
+- **Unfreeze GloVe after warm-up**: Allow GloVe weights to fine-tune after the first few epochs to close the gap with learned embeddings.
+- **Subword tokenization**: Use SentencePiece or BPE tokenization to handle morphologically rich German and reduce OOV rates.
+- **Bidirectional encoder**: Use `bidirectional=True` in the encoder RNN to capture both left and right context.
+- **Larger dataset**: Train on WMT14 EN→DE (~4.5M sentence pairs) for significantly higher BLEU scores.
+- **Back-translation**: Augment the small Multi30K training set by translating DE→EN with the trained model and adding synthetic pairs.
+- **Attention visualization**: Plot attention weight heatmaps to interpret which source tokens the decoder attends to at each generation step — useful for analysis and debugging.
+
+---
+
+## Setup & Usage
+
+### Install dependencies
+
+```bash
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu130
+pip install torchtext pandas pyarrow datasets spacy
+python -m spacy download en_core_web_sm
+python -m spacy download de_core_news_sm
+```
+
+### Task 1 — Text Generation
+
+```bash
+cd task1_text_generation
+
+# Train all four model variants
+python train.py
+
+# Train a single variant
+python train.py --model lstm_glove --epochs 10
+
+# Evaluate perplexity + generate sample text
+python evaluate.py --all
+python evaluate.py --model lstm_learned --prompt "the history of science"
+```
+
+### Task 2 — Machine Translation
+
+```bash
+cd task2_translation
+
+# Download Multi30K dataset first
+python download_data.py
+
+# Train both models
+python train.py
+
+# Evaluate BLEU + show translation examples
+python evaluate.py
+python evaluate.py --model lstm_seq2seq --examples 10
+```
+
+---
+
+## Repository Structure
+
+```
+assignment3-nlp/
+├── task1_text_generation/
+│   ├── data_loader.py     # WikiText-2 parquet loading, custom Vocab, BPTT batching
+│   ├── models.py          # LSTMModel, GRUModel, GloVe/one-hot embedding builders
+│   ├── train.py           # Training loop, checkpointing, results CSV
+│   └── evaluate.py        # Perplexity computation, text generation
+├── task2_translation/
+│   ├── download_data.py   # Downloads Multi30K from HuggingFace
+│   ├── data_loader.py     # Parquet loading, custom Vocab, collate_fn
+│   ├── models.py          # LSTM/GRU encoder-decoder with Bahdanau attention
+│   ├── train.py           # Training loop with teacher forcing decay
+│   └── evaluate.py        # Corpus BLEU, greedy decode, qualitative examples
+├── requirements.txt
+└── README.md
+```
