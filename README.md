@@ -5,14 +5,14 @@
 This project implements deep learning models for two NLP tasks:
 
 - **Task 1 — Text Generation**: Word-level language models trained on WikiText-2 that predict the next token given a sequence of words. Implemented using LSTM and GRU architectures with four embedding variants (learned, GloVe-100, one-hot).
-- **Task 2 — Machine Translation**: English → German neural machine translation trained on Multi30K using encoder–decoder seq2seq models with Bahdanau attention, implemented with both LSTM and GRU.
+- **Task 2 — Machine Translation**: English to German neural machine translation trained on Multi30K using encoder–decoder seq2seq models with Bahdanau attention, implemented with both LSTM and GRU.
 
 ---
 
 ## 2. Dataset Description
 
 ### Task 1 — WikiText-2
-- ~2 million train tokens drawn from verified Wikipedia articles
+- About 2 million train tokens drawn from verified Wikipedia articles
 - Vocabulary: 29,473 tokens (after filtering tokens with frequency < 3)
 - Three splits: 36,718 train rows / 3,760 validation rows / 4,358 test rows
 - Sourced from HuggingFace (`wikitext-2-raw-v1`) and loaded from parquet files
@@ -34,12 +34,12 @@ All models are word-level, trained with backpropagation through time (BPTT) over
 
 **LSTM Language Model**
 ```
-Embedding → Dropout(0.5) → LSTM(2 layers, 512 hidden) → Dropout(0.5) → Linear → LogSoftmax
+Embedding -> Dropout(0.5) -> LSTM(2 layers, 512 hidden) -> Dropout(0.5) -> Linear -> LogSoftmax
 ```
 
 **GRU Language Model**
 ```
-Embedding → Dropout(0.5) → GRU(2 layers, 512 hidden) → Dropout(0.5) → Linear → LogSoftmax
+Embedding -> Dropout(0.5) -> GRU(2 layers, 512 hidden) -> Dropout(0.5)-> Linear -> LogSoftmax
 ```
 
 ### Task 2 — Seq2Seq with Attention
