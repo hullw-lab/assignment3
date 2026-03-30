@@ -87,7 +87,7 @@ Decoder: Embedding + attention context -> Dropout -> RNN -> Linear -> word proba
 
 Prompt: *"the president of the united states"*
 
-> the president of the united states that it was serving to be found to be the case of the two @-@ piece . the effect was made for 5 @ . @ 9 % of the game , and a year in which the game housed a series of the household ' s
+the president of the united states that it was serving to be found to be the case of the two @-@ piece . the effect was made for 5 @ . @ 9 % of the game , and a year in which the game housed a series of the household ' s
 
 ### Sample Translations (Task 2)
 
