@@ -181,7 +181,7 @@ python evaluate.py
 ## File Structure
 
 ```
-assignment3-nlp/
+assignment3/
 ├── README.md
 ├── requirements.txt
 ├── task1/
