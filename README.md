@@ -1,6 +1,6 @@
 # Assignment 3: Natural Language Processing
 
-## 1. Project Overview
+## Project Overview
 
 For this assignment I implemented deep learning models for two different NLP tasks using PyTorch.
 
@@ -9,7 +9,7 @@ For this assignment I implemented deep learning models for two different NLP tas
 
 ---
 
-## 2. Dataset Description
+## Dataset Description
 
 ### Task 1 - WikiText-2
 - A dataset of Wikipedia articles commonly used for language modeling tasks
@@ -26,7 +26,7 @@ For this assignment I implemented deep learning models for two different NLP tas
 
 ---
 
-## 3. Model Architectures Used
+## Model Architectures Used
 
 ### Task 1 - Language Models
 
@@ -58,7 +58,7 @@ Decoder: Embedding + attention context -> Dropout -> RNN -> Linear -> word proba
 
 ---
 
-## 4. Word Embedding Methods
+## Word Embedding Methods
 
 | Method | Dimension | Trainable | Where Used |
 |---|---|---|---|
@@ -67,13 +67,13 @@ Decoder: Embedding + attention context -> Dropout -> RNN -> Linear -> word proba
 | One-hot encoding | vocab_size | No | Task 1 GRU (simple baseline) |
 | Learned embeddings | 256 | Yes | Task 2 LSTM and GRU |
 
-**GloVe** :embeddings come from Stanford's pretrained vectors trained on 6 billion tokens. The idea is that words with similar meanings are already close together in the embedding space before training even starts. Coverage on our vocabulary was 96.4% - words not found in GloVe were just set to zero vectors.
+**GloVe**: embeddings come from Stanford's pretrained vectors trained on 6 billion tokens. The idea is that words with similar meanings are already close together in the embedding space before training even starts. Coverage on our vocabulary was 96.4% - words not found in GloVe were just set to zero vectors.
 
-**One-hot encoding** :just represents each word as a giant vector of zeros with a single 1 at that word's index. There's no information about word similarity at all, so it acts as a lower bound baseline to compare against.
+**One-hot encoding**: just represents each word as a giant vector of zeros with a single 1 at that word's index. There's no information about word similarity at all, so it acts as a lower bound baseline to compare against.
 
 ---
 
-## 5. Experimental Results
+## Experimental Results
 
 ### Task 1 - Test Perplexity (lower is better)
 
@@ -107,7 +107,7 @@ Prompt: *"the president of the united states"*
 
 ---
 
-## 6. Comparison of Models
+## Comparison of Models
 
 ### LSTM vs GRU - Task 1
 
@@ -125,7 +125,7 @@ One-hot performed similarly badly to frozen GloVe (212.51 perplexity), which mak
 
 ---
 
-## 7. Challenges Faced During Implementation
+## Challenges Faced During Implementation
 
 - **torchtext version issues**: The version installed (0.6.0) was really old and didn't support the modern API at all. `WikiText2(split="train")` didn't work, and `build_vocab_from_iterator` didn't accept `min_freq` as an argument. I had to completely rewrite the data loading code and build a custom `Vocab` class from scratch using `collections.Counter`.
 - **Dataset downloading**: The WikiText-2 raw files kept returning 404 errors from different URLs. Eventually I just downloaded the data from HuggingFace as parquet files and read them with pandas, which bypassed the torchtext dataset API entirely.
@@ -136,7 +136,7 @@ One-hot performed similarly badly to frozen GloVe (212.51 perplexity), which mak
 
 ---
 
-## 8. Limitations of the Considered Models
+##  Limitations of the Considered Models
 
 - **These aren't Transformers**: LSTM and GRU seq2seq models were state of the art around 2017 but have been completely replaced by Transformer-based models like BERT and GPT. The results here are much worse than what you'd get with a modern approach.
 - **Frozen GloVe hurt performance**: Keeping GloVe weights frozen prevented the model from adapting to the dataset. This was a design choice made to compare pure embedding types, but in practice you'd want to fine-tune them.
@@ -147,7 +147,7 @@ One-hot performed similarly badly to frozen GloVe (212.51 perplexity), which mak
 
 ---
 
-## 9. Possible Future Improvements
+## Possible Future Improvements
 
 - **Use a Transformer**: This is the obvious next step. Even a small Transformer would likely outperform these RNN models significantly.
 - **Beam search**: Implementing beam search for decoding would probably add a few BLEU points without any retraining.
