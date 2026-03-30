@@ -1,9 +1,6 @@
 """
 download_data.py - Task 2: Machine Translation
 Downloads Multi30K (EN/DE) from HuggingFace and saves as parquet files.
-
-Usage:
-    python download_data.py
 """
 
 import os
