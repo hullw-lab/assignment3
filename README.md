@@ -67,9 +67,9 @@ Decoder: Embedding + attention context -> Dropout -> RNN -> Linear -> word proba
 | One-hot encoding | vocab_size | No | Task 1 GRU (simple baseline) |
 | Learned embeddings | 256 | Yes | Task 2 LSTM and GRU |
 
-**GloVe** embeddings come from Stanford's pretrained vectors trained on 6 billion tokens. The idea is that words with similar meanings are already close together in the embedding space before training even starts. Coverage on our vocabulary was 96.4% - words not found in GloVe were just set to zero vectors.
+**GloVe** :embeddings come from Stanford's pretrained vectors trained on 6 billion tokens. The idea is that words with similar meanings are already close together in the embedding space before training even starts. Coverage on our vocabulary was 96.4% - words not found in GloVe were just set to zero vectors.
 
-**One-hot encoding** just represents each word as a giant vector of zeros with a single 1 at that word's index. There's no information about word similarity at all, so it acts as a lower bound baseline to compare against.
+**One-hot encoding** :just represents each word as a giant vector of zeros with a single 1 at that word's index. There's no information about word similarity at all, so it acts as a lower bound baseline to compare against.
 
 ---
 
