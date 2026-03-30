@@ -2,11 +2,6 @@
 evaluate.py — Task 1: Text Generation
 - Loads a saved checkpoint and reports test perplexity
 - Generates sample text completions (qualitative evaluation)
-
-Usage:
-    python evaluate.py --model lstm_glove
-    python evaluate.py --model gru_learned --prompt "the king of"
-    python evaluate.py --all
 """
 
 import argparse
@@ -23,7 +18,7 @@ import os
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-# ── Perplexity ───────────────────────────────────────────────────────────────
+#  Perplexity ─
 
 def compute_perplexity(model, data, criterion):
     model.eval()
@@ -43,7 +38,7 @@ def compute_perplexity(model, data, criterion):
     return math.exp(avg_loss)
 
 
-# ── Text Generation ──────────────────────────────────────────────────────────
+#  Text Generation 
 
 def generate_text(model, vocab, prompt: str, num_words: int = 50, temperature: float = 0.8):
     """
@@ -86,7 +81,7 @@ def generate_text(model, vocab, prompt: str, num_words: int = 50, temperature: f
     return " ".join(generated)
 
 
-# ── Entry Point ──────────────────────────────────────────────────────────────
+# Entry Point 
 
 def main():
     parser = argparse.ArgumentParser()
