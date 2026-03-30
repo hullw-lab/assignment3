@@ -136,14 +136,10 @@ One-hot performed similarly badly to frozen GloVe (212.51 perplexity), which mak
 ## Possible Future Improvements
 
 - **Use a Transformer**: This is the obvious next step. Even a small Transformer would likely outperform these RNN models significantly.
-- **Beam search**: Implementing beam search for decoding would probably add a few BLEU points without any retraining.
 - **Fine-tune GloVe**: Unfreeze the GloVe weights after a few warm-up epochs to let them adapt to the domain.
 - **BPE tokenization**: Use byte pair encoding so the model can handle rare and compound German words without falling back to `<unk>`.
 - **Bidirectional encoder**: A bidirectional LSTM/GRU encoder would give better representations of the source sentence.
 - **More data**: Training on a larger dataset like WMT14 would dramatically improve translation quality.
-- **Visualize attention**: The attention weights are already computed during decoding - plotting them as heatmaps would make it easy to see which source words the model focuses on for each output word.
-
----
 
 ## Setup
 
