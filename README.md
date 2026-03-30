@@ -194,7 +194,7 @@ python download_data.py
 # Train
 python train.py
 
-# Evaluate BLEU + see example translations
+# Evaluate BLEU 
 python evaluate.py
 ```
 
