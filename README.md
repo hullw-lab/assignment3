@@ -133,7 +133,7 @@ One-hot performed similarly badly to frozen GloVe (212.51 perplexity), which mak
 
 - **Use a Transformer**: This is the obvious next step. Even a small Transformer would likely outperform these RNN models significantly.
 - **Fine-tune GloVe**: Unfreeze the GloVe weights after a few warm-up epochs to let them adapt to the domain.
-- **BPE tokenization**: Use byte pair encoding so the model can handle rare and compound German words without falling back to `<unk>`.
+- **BPE tokenization**: Use byte pair encoding so the model can handle rare and compound German words without falling back to <unk>.
 - **Bidirectional encoder**: A bidirectional LSTM/GRU encoder would give better representations of the source sentence.
 - **More data**: Training on a larger dataset like WMT14 would dramatically improve translation quality.
 
