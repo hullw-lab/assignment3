@@ -11,7 +11,7 @@ import torch.nn as nn
 from torchtext.vocab import GloVe
 
 
-# ── Embedding Helpers ────────────────────────────────────────────────────────
+# Embedding Helpers 
 
 def build_glove_embedding(vocab, glove_dim: int = 100, freeze: bool = True):
     """
@@ -56,14 +56,14 @@ def build_onehot_embedding(vocab_size: int):
     return embedding
 
 
-# ── LSTM Model ───────────────────────────────────────────────────────────────
+# LSTM Model 
 
 class LSTMModel(nn.Module):
     """
     Word-level language model using an LSTM.
 
     Architecture:
-        Embedding → Dropout → LSTM (stacked) → Dropout → Linear → LogSoftmax
+        Embedding → Dropout -> LSTM (stacked) -> Dropout -> Linear -> LogSoftmax
 
     Args:
         vocab_size    : number of tokens in vocabulary
@@ -134,7 +134,7 @@ class LSTMModel(nn.Module):
         return tuple(h.detach() for h in hidden)
 
 
-# ── GRU Model ────────────────────────────────────────────────────────────────
+# GRU Model 
 
 class GRUModel(nn.Module):
     """
