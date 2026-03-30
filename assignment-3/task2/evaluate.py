@@ -1,10 +1,6 @@
 """
 evaluate.py - Task 2: Machine Translation
 Computes corpus BLEU on the test set and shows qualitative translation examples.
-
-Usage:
-    python evaluate.py                       # evaluate both models
-    python evaluate.py --model lstm_seq2seq
 """
 
 import argparse
@@ -19,7 +15,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MAX_OUTPUT_LEN = 50
 
 
-# ── BLEU (manual, no torchtext dependency) ────────────────────────────────────
+# BLEU (manual, no torchtext dependency) 
 
 def _ngrams(sequence, n):
     return [tuple(sequence[i:i+n]) for i in range(len(sequence)-n+1)]
@@ -68,7 +64,7 @@ def corpus_bleu(hypotheses, references, max_n=4):
     return bp * math.exp(log_avg / max_n) * 100
 
 
-# ── Greedy Decode ────────────────────────────────────────────────────────────
+# Greedy Decode 
 
 def greedy_decode(model, src, tgt_vocab):
     model.eval()
@@ -101,7 +97,7 @@ def greedy_decode(model, src, tgt_vocab):
     return tokens
 
 
-# ── Evaluation ───────────────────────────────────────────────────────────────
+# Evaluation 
 
 def compute_bleu(model, test_loader, src_vocab, tgt_vocab):
     tgt_itos = tgt_vocab.get_itos()
@@ -143,7 +139,7 @@ def show_examples(model, test_loader, src_vocab, tgt_vocab, n=5):
             shown += 1
 
 
-# ── Entry Point ──────────────────────────────────────────────────────────────
+# Entry Point 
 
 def main():
     parser = argparse.ArgumentParser()
