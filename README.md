@@ -29,24 +29,20 @@ For this assignment I implemented deep learning models for two different NLP tas
 Both models take in a sequence of words and try to predict the next word at each step. Training uses backpropagation through time (BPTT) with a window of 35 tokens.
 
 **LSTM Model**
-```
+
 Embedding -> Dropout(0.5) -> LSTM(2 layers, 512 hidden units) -> Dropout(0.5) -> Linear -> LogSoftmax
-```
 
 **GRU Model**
-```
+
 Embedding -> Dropout(0.5) -> GRU(2 layers, 512 hidden units) -> Dropout(0.5) -> Linear -> LogSoftmax
-```
 
 ### Task 2 - Seq2Seq with Attention
 
 Both translation models use an encoder-decoder design with Bahdanau attention. The attention mechanism lets the decoder look back at different parts of the input sentence when generating each output word, which helps a lot compared to just passing a single context vector.
 
-```
 Encoder: Embedding -> Dropout -> RNN -> encoder outputs + hidden state
 Attention: score = v * tanh(W1 * decoder_hidden + W2 * encoder_output)
 Decoder: Embedding + attention context -> Dropout -> RNN -> Linear -> word probabilities
-```
 
 - **LSTM Seq2Seq**: uses LSTM cells in both encoder and decoder (has both hidden state and cell state)
 - **GRU Seq2Seq**: uses GRU cells (just one hidden state, simpler than LSTM)
