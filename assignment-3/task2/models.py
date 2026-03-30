@@ -14,9 +14,7 @@ import torch.nn.functional as F
 import random
 
 
-# ────────────────────────────────────────────────────────────────────────────
 # Shared Attention Module (Bahdanau / additive attention)
-# ────────────────────────────────────────────────────────────────────────────
 
 class BahdanauAttention(nn.Module):
     """
@@ -52,9 +50,7 @@ class BahdanauAttention(nn.Module):
         return context, attn_weights
 
 
-# ────────────────────────────────────────────────────────────────────────────
 # LSTM Seq2Seq
-# ────────────────────────────────────────────────────────────────────────────
 
 class LSTMEncoder(nn.Module):
     def __init__(self, vocab_size, embed_dim, hidden_dim, num_layers, dropout, pad_idx):
@@ -142,9 +138,7 @@ class LSTMSeq2Seq(nn.Module):
         return outputs
 
 
-# ────────────────────────────────────────────────────────────────────────────
 # GRU Seq2Seq
-# ────────────────────────────────────────────────────────────────────────────
 
 class GRUEncoder(nn.Module):
     def __init__(self, vocab_size, embed_dim, hidden_dim, num_layers, dropout, pad_idx):
@@ -209,9 +203,7 @@ class GRUSeq2Seq(nn.Module):
         return outputs
 
 
-# ────────────────────────────────────────────────────────────────────────────
 # Factory
-# ────────────────────────────────────────────────────────────────────────────
 
 def build_lstm_seq2seq(src_vocab_size, tgt_vocab_size, pad_idx, device,
                        embed_dim=256, hidden_dim=512, num_layers=2, dropout=0.5):
