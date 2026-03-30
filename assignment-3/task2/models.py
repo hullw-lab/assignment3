@@ -3,7 +3,7 @@ models.py — Task 2: Machine Translation
 Encoder-Decoder seq2seq with attention, implemented for both LSTM and GRU.
 
 Architecture overview:
-    Encoder : embeds + encodes source sentence → context vectors
+    Encoder : embeds + encodes source sentence -> context vectors
     Attention: computes alignment weights over encoder outputs
     Decoder : generates target tokens one at a time using attention context
 """
