@@ -116,13 +116,13 @@ One-hot performed similarly badly to frozen GloVe (212.51 perplexity), which mak
 - **GPU not being used**: PyTorch was defaulting to CPU even though my machine has a GPU. Turned out the installed version was the CPU-only build. Had to uninstall and reinstall with --index-url https://download.pytorch.org/whl/cu130 to get CUDA working.
 - **One-hot memory**: A 29,473 x 29,473 identity matrix takes up a lot of memory. I had to reduce the hidden size to 128 and use only one layer for the one-hot GRU model to avoid running out of VRAM.
 - **API deprecations**: ReduceLROnPlateau no longer accepts verbose=True in newer PyTorch, and global declarations in Python 3.13 have to come before any use of the variable in the same function. Both caused errors that had to be fixed.
-- **spaCy models**: The German spaCy model (`de_core_news_sm`) couldn't be installed with the normal one-liner command on Windows. Had to install it directly from the GitHub release URL using pip.
+- **spaCy models**: The German spaCy model (de_core_news_sm) couldn't be installed with the normal one-liner command on Windows. Had to install it directly from the GitHub release URL using pip.
 
 ##  Limitations of the Considered Models
 
 - **These aren't Transformers**: LSTM and GRU seq2seq models were state of the art around 2017 but have been completely replaced by Transformer-based models like BERT and GPT. The results here are much worse than what you'd get with a modern approach.
 - **Frozen GloVe hurt performance**: Keeping GloVe weights frozen prevented the model from adapting to the dataset. This was a design choice made to compare pure embedding types, but in practice you'd want to fine-tune them.
-- **Word-level tokenization causes OOV problems**: German has a lot of compound words that don't appear in the training vocabulary, which shows up as `<unk>` tokens in the translations. Subword tokenization (like BPE) would fix this.
+- **Word-level tokenization causes OOV problems**: German has a lot of compound words that don't appear in the training vocabulary, which shows up as unk tokens in the translations. Subword tokenization (like BPE) would fix this.
 - **Greedy decoding**: The translation evaluation just picks the highest probability word at each step. Beam search would give better results by exploring multiple possible translations at once.
 - **Multi30K is tiny**: 29,000 sentence pairs is a very small dataset for machine translation. Real MT systems train on hundreds of millions of pairs.
 - **Unidirectional encoder**: The encoder only reads the source sentence left to right. A bidirectional encoder would give the decoder more context to work with.
