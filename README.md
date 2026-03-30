@@ -7,8 +7,6 @@ For this assignment I implemented deep learning models for two different NLP tas
 - **Task 1 - Text Generation**: I trained LSTM and GRU language models on the WikiText-2 dataset to predict the next word in a sequence. I tested four different combinations of model architecture and word embeddings to see how they compare.
 - **Task 2 - Machine Translation**: I built a seq2seq model that translates English sentences to German using the Multi30K dataset. Both LSTM and GRU versions were implemented with an attention mechanism.
 
----
-
 ## Dataset Description
 
 ### Task 1 - WikiText-2
@@ -23,8 +21,6 @@ For this assignment I implemented deep learning models for two different NLP tas
 - 29,000 training pairs, 1,014 validation, 1,000 test
 - English vocab: 5,921 tokens | German vocab: 7,820 tokens
 - Also downloaded from HuggingFace (`bentrevett/multi30k`)
-
----
 
 ## Model Architectures Used
 
@@ -56,8 +52,6 @@ Decoder: Embedding + attention context -> Dropout -> RNN -> Linear -> word proba
 - **GRU Seq2Seq**: uses GRU cells (just one hidden state, simpler than LSTM)
 - Teacher forcing starts at 0.5 and slowly decreases to 0.3 over training so the model learns to use its own predictions
 
----
-
 ## Word Embedding Methods
 
 | Method | Dimension | Trainable | Where Used |
@@ -70,8 +64,6 @@ Decoder: Embedding + attention context -> Dropout -> RNN -> Linear -> word proba
 **GloVe**: embeddings come from Stanford's pretrained vectors trained on 6 billion tokens. The idea is that words with similar meanings are already close together in the embedding space before training even starts. Coverage on our vocabulary was 96.4% - words not found in GloVe were just set to zero vectors.
 
 **One-hot encoding**: just represents each word as a giant vector of zeros with a single 1 at that word's index. There's no information about word similarity at all, so it acts as a lower bound baseline to compare against.
-
----
 
 ## Experimental Results
 
@@ -103,9 +95,7 @@ Prompt: *"the president of the united states"*
 |---|---|---|---|
 | a man in an orange hat starring at something . | ein mann mit einem orangefarbenen hut , der etwas . | ein mann mit orangefarbenem hut betrachtet etwas etwas . | ein mann mit orangefarbener mütze meißelt etwas etwas . |
 | people are fixing the roof of a house . | leute reparieren das dach eines hauses . | menschen personen die das eines eines hauses . | leute starren den dach eines hauses . |
-| five people wearing winter jackets and helmets stand in the snow , with in the background . | fünf leute in winterjacken und mit helmen stehen im schnee mit im hintergrund . | fünf personen in rettungswesten und helmen stehen im schnee und im hintergrund im im hintergrund . | fünf personen mit jacken und helmen stehen im schnee im hintergrund . |
-
----
+| five people wearing winter jackets and helmets stand in the snow , with in the background . | fünf leute in winterjacken und mit helmen stehen im schnee mit im hintergrund . | fünf personen in rettungswesten und helmen stehen im schnee und im hintergrund im im hintergrund . | fünf personen mit jacken und helmen stehen im schnee im hintergrund . 
 
 ## Comparison of Models
 
@@ -123,8 +113,6 @@ The biggest surprise was that learned embeddings beat GloVe by a lot (120.93 vs 
 
 One-hot performed similarly badly to frozen GloVe (212.51 perplexity), which makes sense since both are fixed representations that the model can't learn from.
 
----
-
 ## Challenges Faced During Implementation
 
 - **torchtext version issues**: The version installed (0.6.0) was really old and didn't support the modern API at all. `WikiText2(split="train")` didn't work, and `build_vocab_from_iterator` didn't accept `min_freq` as an argument. I had to completely rewrite the data loading code and build a custom `Vocab` class from scratch using `collections.Counter`.
@@ -133,8 +121,6 @@ One-hot performed similarly badly to frozen GloVe (212.51 perplexity), which mak
 - **One-hot memory**: A 29,473 x 29,473 identity matrix takes up a lot of memory. I had to reduce the hidden size to 128 and use only one layer for the one-hot GRU model to avoid running out of VRAM.
 - **API deprecations**: `ReduceLROnPlateau` no longer accepts `verbose=True` in newer PyTorch, and `global` declarations in Python 3.13 have to come before any use of the variable in the same function. Both caused errors that had to be fixed.
 - **spaCy models**: The German spaCy model (`de_core_news_sm`) couldn't be installed with the normal one-liner command on Windows. Had to install it directly from the GitHub release URL using pip.
-
----
 
 ##  Limitations of the Considered Models
 
