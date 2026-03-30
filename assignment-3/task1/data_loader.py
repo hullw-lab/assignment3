@@ -1,6 +1,5 @@
 """
 data_loader.py - Task 1: Text Generation
-Compatible with torchtext 0.6.0.
 Reads WikiText-2 from HuggingFace parquet files.
 """
 
@@ -10,7 +9,6 @@ import torch
 import pandas as pd
 from torchtext.data.utils import get_tokenizer
 
-# ── Constants ────────────────────────────────────────────────────────────────
 BATCH_SIZE = 32
 SEQ_LEN    = 35
 MIN_FREQ   = 3
@@ -27,7 +25,7 @@ TEXT_COL = "text"
 tokenizer = get_tokenizer("basic_english")
 
 
-# ── Read ─────────────────────────────────────────────────────────────────────
+# Read 
 
 def _read(split: str):
     fpath = os.path.join(DATA_DIR, FILES[split])
@@ -37,7 +35,7 @@ def _read(split: str):
     return df[TEXT_COL].dropna().tolist()
 
 
-# ── Vocab (manual, compatible with torchtext 0.6) ────────────────────────────
+# Vocab (manual, compatible with torchtext 0.6)
 
 class Vocab:
     """Minimal vocab class that mimics torchtext Vocab interface."""
@@ -84,7 +82,7 @@ def build_vocab(train_lines):
     return vocab
 
 
-# ── Processing ───────────────────────────────────────────────────────────────
+# Processing 
 
 def data_process(lines, vocab):
     tokens = []
@@ -111,7 +109,7 @@ def get_batch(source: torch.Tensor, i: int, seq_len: int = SEQ_LEN):
     return x, y
 
 
-# ── Public API ───────────────────────────────────────────────────────────────
+#  Public API 
 
 def load_data(batch_size: int = BATCH_SIZE):
     print("Loading WikiText-2 from parquet files...")
