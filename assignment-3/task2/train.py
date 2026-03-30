@@ -2,10 +2,6 @@
 train.py — Task 2: Machine Translation
 Trains LSTM and GRU seq2seq models on Multi30K (EN→DE).
 Saves checkpoints and a results CSV.
-
-Usage:
-    python train.py                   # train both models
-    python train.py --model gru --epochs 15
 """
 
 import argparse
@@ -21,7 +17,7 @@ from data_loader import load_data, PAD_IDX, BATCH_SIZE
 from models import build_lstm_seq2seq, build_gru_seq2seq
 
 
-# ── Config ───────────────────────────────────────────────────────────────────
+# Config 
 EPOCHS     = 20
 LR         = 0.001
 CLIP       = 1.0
@@ -35,7 +31,7 @@ RESULTS_CSV = "results_task2.csv"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-# ── Train / Eval ─────────────────────────────────────────────────────────────
+# Train / Eval 
 
 def train_epoch(model, loader, optimizer, criterion, clip, teacher_forcing=0.5):
     model.train()
@@ -74,7 +70,7 @@ def evaluate_loss(model, loader, criterion):
     return avg_loss, math.exp(avg_loss)
 
 
-# ── Main ─────────────────────────────────────────────────────────────────────
+# Main 
 
 def run(model_name, model, train_loader, val_loader):
     """Train one model for EPOCHS and save best checkpoint."""
