@@ -13,7 +13,7 @@ from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
 from torchtext.data.utils import get_tokenizer
 
-# ── Constants ────────────────────────────────────────────────────────────────
+# Constants
 BATCH_SIZE = 128
 MIN_FREQ   = 2
 
@@ -32,7 +32,7 @@ EOS_IDX = 2
 UNK_IDX = 3
 SPECIAL_SYMBOLS = ["<pad>", "<bos>", "<eos>", "<unk>"]
 
-# ── Tokenizers ───────────────────────────────────────────────────────────────
+# Tokenizers 
 try:
     import spacy
     spacy_en = spacy.load("en_core_web_sm")
@@ -47,7 +47,7 @@ except OSError:
     de_tokenizer = lambda text: _basic(text)
 
 
-# ── Vocab (manual, torchtext 0.6 compatible) ─────────────────────────────────
+# Vocab (manual, torchtext 0.6 compatible)
 
 class Vocab:
     def __init__(self, counter, min_freq=1, specials=None):
@@ -81,7 +81,7 @@ class Vocab:
         return self.stoi
 
 
-# ── Read & Build Vocab ────────────────────────────────────────────────────────
+# Read & Build Vocab 
 
 def _read(split: str):
     fpath = os.path.join(DATA_DIR, FILES[split])
@@ -109,7 +109,7 @@ def build_vocabs(train_en, train_de):
     return src_vocab, tgt_vocab
 
 
-# ── Collate ───────────────────────────────────────────────────────────────────
+# Collate 
 
 def make_collate_fn(src_vocab, tgt_vocab):
     def collate_fn(batch):
@@ -127,7 +127,7 @@ def make_collate_fn(src_vocab, tgt_vocab):
     return collate_fn
 
 
-# ── Public API ────────────────────────────────────────────────────────────────
+#  Public API 
 
 def load_data(batch_size: int = BATCH_SIZE):
     """Returns (train_loader, val_loader, test_loader, src_vocab, tgt_vocab)."""
